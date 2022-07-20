@@ -7,14 +7,14 @@ indir=sys.argv[1]
 queries=[]
 for root, dirs, filenames in os.walk(indir):
 	for f in filenames:
-		if not ".count" in f and 'mod' not in f: 
+		if not ".count" in f and 'mod' not in f:
 			queries.append(os.path.join(root, f))
 
 sdir=os.getcwd()+'/'
 
 def prepare_graph(name):
         g = nx.read_edgelist(name,create_using=nx.DiGraph(),data=False,nodetype=int)
-        g.remove_edges_from(g.selfloop_edges())
+        g.remove_edges_from(list(nx.selfloop_edges(g)))
         g.remove_nodes_from(nx.isolates(g))
         g = nx.convert_node_labels_to_integers(g,first_label=1)
         n = g.number_of_edges()
@@ -38,6 +38,6 @@ def count(name):
         os.system('rm '+name+'.mod2')
         os.system('rm '+name+'.mod')
 
-        
+
 for q in queries:
         count(q)

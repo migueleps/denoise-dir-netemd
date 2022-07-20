@@ -19,7 +19,7 @@ if input_size == "2" and input_direction == "undir":
 input_type = sys.argv[4]
 sanitize(input_type,types,4)
 n_threads = sys.argv[5]
-if sys.argc > 5:
+if len(sys.argv) > 6:
     opt_arg = sys.argv[6]
 else:
     opt_arg = ""

@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import os
 from multiprocessing import Pool
-import pyximport; pyximport.install()
+import pyximport; pyximport.install(language_level=3)
 import cyemdORBD_PCA as cy
 import shutil
 import time
@@ -55,11 +55,10 @@ def KSAQ(indir,outdir,n):
     print("Time taken to rewrite orbits with pca (s):", time.time() - start)
     orbs=range(norbs)
     V=[[queries,orb] for orb in orbs]
-    if __name__ == '__main__':
-        p = Pool(n)
-        c=p.imap(cy.MKSAP,V)
-        p.close()
-        p.join()
+    p = Pool(n)
+    c=p.imap(cy.MKSAP,V)
+    p.close()
+    p.join()
     for i,K in enumerate(c):
         cy.toM(K,queries,"{}/NetEmd_Orb{}{}_PCA{}EXPVAR".format(outdir,i,indir,int(expvar*100)))
         if i == 0:
@@ -70,5 +69,5 @@ def KSAQ(indir,outdir,n):
             cy.toM(Ms/(i+1),queries,'NetEmd_G3D_{}_PCA{}EXPVAR'.format(indir,int(expvar*100)))
     return 1
 
-
-KSAQ(indir,outdir,n)
+if __name__ == '__main__':
+    KSAQ(indir,outdir,n)

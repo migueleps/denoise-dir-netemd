@@ -15,7 +15,7 @@ sdir=os.getcwd()+'/'
 
 def prepare_graph(name):
         g = nx.read_edgelist(name,create_using=nx.DiGraph(),data=False,nodetype=int)
-        g.remove_edges_from(g.selfloop_edges())
+        g.remove_edges_from(list(nx.selfloop_edges(g)))
         g.remove_nodes_from(list(nx.isolates(g)))
         g = nx.convert_node_labels_to_integers(g,first_label=1)
         n = g.number_of_edges()
@@ -58,7 +58,7 @@ def count(name):
                         os.system('gtscanner/GTScanner -s 4 -d -g '+name+'.mod -m gtrie gtscanner/gtries/or_dir4.gt -or -th {} -countsO {}.countsO4d'.format(n_threads,name))
                         if os.stat(name+".countsO4d").st_size > 0:
                                 break
-                        print("Failed to compute $D orbits for {}, trying again".format(name))
+                        print("Failed to compute 4D orbits for {}, trying again".format(name))
                 shutil.copy2(sdir+name+".countsO4d",sdir+"4d_precomputed/")
 
         if os.path.isfile(name+'.mod'):

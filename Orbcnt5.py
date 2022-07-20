@@ -24,7 +24,7 @@ def convertv(fn):
     return 1
 def convert(fn):
     G=nx.read_edgelist(fn,data=False)
-    G.remove_edges_from(list(G.selfloop_edges()))
+    G.remove_edges_from(list(nx.selfloop_edges(G)))
     G.remove_nodes_from(list(nx.isolates(G)))
     G = nx.convert_node_labels_to_integers(G,first_label=1)
     nx.write_edgelist(G,fn+'mod',delimiter='\t',data=False)

@@ -2,17 +2,18 @@ import numpy as np
 import sys
 import os
 from multiprocessing import Pool
-import pyximport; pyximport.install()
+import pyximport; pyximport.install(language_level=3)
 import cyemdORBD_PCA as cy
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import time
 
 indir=sys.argv[1]
 outdir=sys.argv[2]
 n=int(sys.argv[3])
 norbs=3
-perc_var=float(sys.argv[4])
+expvar=float(sys.argv[4])
 
 def pca_rewrite(queries):
     for f in queries:
@@ -23,7 +24,7 @@ def pca_rewrite(queries):
         pca_ncomps = PCA().fit(z_data)
         nc = 0
         exp_var = 0
-        while exp_var < perc_var:
+        while exp_var < expvar:
             exp_var += pca_ncomps.explained_variance_ratio_[nc]
             nc += 1
         pca = PCA(n_components = nc).fit(z_data)
@@ -42,11 +43,10 @@ def KSAQ(indir,outdir,n):
     pca_rewrite(queries)
     print("Time taken to rewrite orbits with pca (s):", time.time() - start)
     V=[[queries,orb] for orb in orbs]
-    if __name__ == '__main__':
-        p = Pool(n)
-        c=p.imap(cy.MKSAP,V)
-        p.close()
-        p.join()
+    p = Pool(n)
+    c=p.imap(cy.MKSAP,V)
+    p.close()
+    p.join()
     for i,K in enumerate(c):
         cy.toM(K,queries,"{}/NetEmd_Orb{}{}_PCA{}EXPVAR".format(outdir,i,indir,int(expvar*100)))
         if i==0:
@@ -57,4 +57,5 @@ def KSAQ(indir,outdir,n):
             cy.toM(Ms/(i+1),queries,'NetEmd_G3D_{}_PCA{}EXPVAR'.format(indir,int(expvar*100)))
     return 1
 
-KSAQ(indir,outdir,n)
+if __name__ == '__main__':
+    KSAQ(indir,outdir,n)

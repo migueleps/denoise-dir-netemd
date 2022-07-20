@@ -2,8 +2,8 @@ import numpy as np
 import sys
 import os
 from multiprocessing import Pool
-import pyximport; pyximport.install()
-import cyemdORBD_ICA as cy
+import pyximport; pyximport.install(language_level=3)
+import cyemdORBD_PCA as cy
 import shutil
 import time
 from sklearn.decomposition import FastICA
@@ -50,11 +50,10 @@ def KSAQ(indir,outdir,n):
     print("Type to compute ICA rewrite: {}".format(time.time()-t))
     orbs=range(norbs)
     V=[[queries,orb] for orb in orbs]
-    if __name__ == '__main__':
-        p = Pool(n)
-        c=p.imap(cy.MKSAP,V)
-        p.close()
-        p.join()
+    p = Pool(n)
+    c=p.imap(cy.MKSAP,V)
+    p.close()
+    p.join()
     for i,K in enumerate(c):
         cy.toM(K,queries,"{}/NetEmd_Orb{}{}_ICA{}COMPS".format(outdir,i,indir,ncomps))
         if i == 0:
@@ -67,4 +66,5 @@ def KSAQ(indir,outdir,n):
             cy.toM(Ms/(i+1),queries,'NetEmd_G4D_{}_ICA{}COMPS'.format(indir,ncomps))
     return 1
 
-KSAQ(indir,outdir,n)
+if __name__ == '__main__':
+    KSAQ(indir,outdir,n)

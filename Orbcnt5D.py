@@ -15,7 +15,7 @@ sdir=os.getcwd()+'/'
 
 def prepare_graph(name):
         g = nx.read_edgelist(name,create_using=nx.DiGraph(),data=False,nodetype=int)
-        g.remove_edges_from(g.selfloop_edges())
+        g.remove_edges_from(list(nx.selfloop_edges(g)))
         g.remove_nodes_from(list(nx.isolates(g)))
         g = nx.convert_node_labels_to_integers(g,first_label=1)
         n = g.number_of_edges()

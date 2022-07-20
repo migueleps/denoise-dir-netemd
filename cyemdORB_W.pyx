@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+#cython: language_level=3
 
 from cpython cimport array
 import array
@@ -117,6 +117,7 @@ def toM(K,queries,n_file): #write K to file
             f.write('\n')
     f.close()
     return 1
+
 def readcount(fn,orb): #get graphlet degree distribution for orbit orb
     f=open(fn,'r')
     fread= f.readlines()

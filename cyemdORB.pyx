@@ -1,27 +1,29 @@
 
-# coding: utf-8
+#cython: language_level=3
 
-# In[ ]:
-
-from cpython cimport array 
-import array 
+from cpython cimport array
+import array
 from scipy.optimize import minimize_scalar
 from numpy import zeros
 import numpy as np
 import os
-def dis(s): #maps the empirical values (s) to a normalized histogram with bins of with 1 and centers this to have mean 0. This is then used as the input distribution for NetEmd. 
+
+def dis(s): #maps the empirical values (s) to a normalized histogram with bins of with 1 and centers this to have mean 0. This is then used as the input distribution for NetEmd.
     vals=sorted(list(set(s)))
     m=sum(s)/len(s)
     return [[i-m,i+1-m,s.count(i)/float(len(s))] for i in vals]
-def mean(d): 
+
+def mean(d):
     return sum([((i[0]+i[1])/2.0)*i[2] for i in d])
-def variance(d): #computes variance of distribution d. Note that this differs from the variance in the discrete case since d is assumed to be a piecewise uniform/continious pdf. For instance compare X Bernoulli (1/2), so X puts equal mass on 0 and 1. The mean is 1/2, the variance is 1/4; To Y continuous uniform[0,1]: the mean is again 1/2, the variance is 1/12. 
+
+def variance(d): #computes variance of distribution d. Note that this differs from the variance in the discrete case since d is assumed to be a piecewise uniform/continious pdf. For instance compare X Bernoulli (1/2), so X puts equal mass on 0 and 1. The mean is 1/2, the variance is 1/4; To Y continuous uniform[0,1]: the mean is again 1/2, the variance is 1/12.
     return sum([(i[0]**2+i[1]**2+i[0]*i[1])*i[2]/3.0 for i in d])-mean(d)**2
+
 def rescale(d): #rescale d
     m=variance(d)**(-0.5)
     return [[i[0]*m,i[1]*m,i[2]] for i in d]
- 
-def cum(d): #computes the cummulative of d which is a piece-wise linear function which we encode as the coordinates and values at the points where the slope changes.   
+
+def cum(d): #computes the cummulative of d which is a piece-wise linear function which we encode as the coordinates and values at the points where the slope changes.
     cm=[[d[0][0],0.0]]
     dlast=d[0][0]
     c=0
@@ -32,7 +34,8 @@ def cum(d): #computes the cummulative of d which is a piece-wise linear function
         cm.append([i[1],c])
         dlast=i[1]
     return np.array(cm,dtype='f')
-cdef float cP(float [:,:] c, int ind, float p): #computes value of the cummulative c at point p 
+
+cdef float cP(float [:,:] c, int ind, float p): #computes value of the cummulative c at point p
     if p<=c[0][0]:
         return 0.0
     if p>=c[-1][0]:
@@ -57,7 +60,7 @@ cdef float KSA(float [:,:] c1, float [:,:] c2): #computes EMD between cdfs c1 an
     else:
         ind2+=1
         pp=c2[0][0]
-    x2=0.0    
+    x2=0.0
     for i in range(lt):
         x1=x2
         if ind1+1==l1 or ind2+1==l2:
@@ -66,7 +69,7 @@ cdef float KSA(float [:,:] c1, float [:,:] c2): #computes EMD between cdfs c1 an
                 x2=1-c2[ind2][1]
                 a+=abs(x1+x2)*(c2[ind2][0]-pp)*0.5
                 pp=c2[ind2][0]
-            else:    
+            else:
                 ind1+=1
                 x2=c1[ind1][1]-1
                 a+=abs(x1+x2)*(c1[ind1][0]-pp)*0.5
@@ -89,6 +92,7 @@ cdef float KSA(float [:,:] c1, float [:,:] c2): #computes EMD between cdfs c1 an
                     a+=0.5*(c2[ind2][0]-pp)*(x1**2+x2**2)/(abs(x1)+abs(x2))
                 pp=c2[ind2][0]
     return a
+
 cdef float [:,:] shift(float [:,:] c,float t): #shifts c by t
     cdef int i
     cdef int lc=len(c)
@@ -96,13 +100,16 @@ cdef float [:,:] shift(float [:,:] c,float t): #shifts c by t
     for i in range(lc):
         dd[i][0]+=t
     return dd
+
 cdef float KSAt(float [:,:] c1,float [:,:] c2,float t): #computes EMD between c1 and c2+t
-    return KSA(shift(c1,t),c2)          
+    return KSA(shift(c1,t),c2)
+
 def KSAPS(float [:,:] d1, float [:,:] d2): #find t that minimizes EMD and return EMD*(c1,c2)=EMD(c1+t,c2)
     cdef float tt
     cdef float r
     r=minimize_scalar(lambda tt: KSAt(d1,d2,tt),method='brent',tol=0.00001, options={'maxiter': 150}).fun
     return r
+
 def toM(K,queries,n_file): #write K to file
     f = open(n_file,'w')
     f.write('\t')
@@ -114,8 +121,9 @@ def toM(K,queries,n_file): #write K to file
             for j in range(len(queries)):
                     f.write(str(round(K[i][j],6))+'\t')
             f.write('\n')
-    f.close()    
+    f.close()
     return 1
+
 def readcount(fn,orb): #get graphlet degree distribution for orbit orb
     f=open(fn,'r')
     fread= f.readlines()
@@ -129,7 +137,7 @@ def get_queries(indir):
     queries=[]
     for root, dirs, filenames in os.walk(indir):
         for f in filenames:
-            if not ".count" in f and not 'temp' in f: 
+            if not ".count" in f and not 'temp' in f:
                 queries.append(os.path.join(root, f))
     queries.sort()
     return queries
@@ -148,6 +156,6 @@ def MKSA(queries,orb): #computes NetEmd between queries for orbit orb
             K[i][j]=t
             K[j][i]=t
     return K
+
 def MKSAP(V):
     return MKSA(V[0],V[1])
-
