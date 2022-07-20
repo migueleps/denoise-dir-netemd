@@ -9,9 +9,9 @@ n=int(sys.argv[2])
 queries=[]
 for root, dirs, filenames in os.walk(indir):
 	for f in filenames:
-		if not ".count" in f:# and 'mod' not in f: 
+		if not ".count" in f:# and 'mod' not in f:
 			queries.append(os.path.join(root, f))
-                        
+
 
 def convertv(fn):
     f=open(fn,'r')
@@ -21,15 +21,14 @@ def convertv(fn):
         fout.write(str(int(line[0])+1)+'\t'+str(int(line[1])+1)+'\n')
     f.close()
     fout.close()
-    return 1    
+    return 1
 def convert(fn):
     G=nx.read_edgelist(fn,data=False)
     G.remove_edges_from(list(G.selfloop_edges()))
     G.remove_nodes_from(list(nx.isolates(G)))
     G = nx.convert_node_labels_to_integers(G,first_label=1)
-    #G=nx.relabel_nodes(G,{G.nodes()[i]:i+1 for i in range(nx.number_of_nodes(G))})
     nx.write_edgelist(G,fn+'mod',delimiter='\t',data=False)
-    return 1     
+    return 1
 
 sdir=os.getcwd()+'/'
 
@@ -49,7 +48,7 @@ def count(name):
         shutil.copy2(sdir+name+".countsO",sdir+"precomputed/")
         os.system('rm '+name+'arg')
         os.system('rm '+sdir+name+'mod')
-    
+
 
 if __name__ == '__main__':
         p = Pool(n)

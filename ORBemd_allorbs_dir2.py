@@ -1,29 +1,25 @@
-
-# coding: utf-8
-
-# In[1]:
-
 import numpy as np
 import sys
 import os
 from multiprocessing import Pool
 import pyximport; pyximport.install()
-import cyemdORB as cy
-
-
-# In[24]:
+import cyemdORBD as cy
 
 indir=sys.argv[1]
 outdir=sys.argv[2]
 n=int(sys.argv[3])
 
-
-# In[3]:
+def join_counts(queries):
+    for q in queries:
+        q2d = q + '.countsO2d'
+        qf = q + '.countsO'
+        os.system('mv %s %s' % (q2d,qf))
 
 def KSAQ(indir,outdir,n):
-    os.mkdir(outdir)
     queries=cy.get_queries(indir)
-    orbs=range(73)
+    os.mkdir(outdir)
+    join_counts(queries)
+    orbs=range(3)
     V=[[queries,orb] for orb in orbs]
     if __name__ == '__main__':
         p = Pool(n)
@@ -36,25 +32,9 @@ def KSAQ(indir,outdir,n):
             Ms=K
         else:
             Ms=Ms+K
-        if i==3:
-            cy.toM(Ms/(i+1),queries,'NetEmd_G3_'+indir)
-        elif i==14:
-            cy.toM(Ms/(i+1),queries,'NetEmd_G4_'+indir)
-        elif i==72:
-            cy.toM(Ms/(i+1),queries,'NetEmd_G5_'+indir)
+        if i==2:
+            cy.toM(Ms/(i+1),queries,'NetEmd_G2D_'+indir)
     return 1
-        
-        
-    
-    
 
-
-# In[ ]:
 
 KSAQ(indir,outdir,n)
-
-
-# In[ ]:
-
-
-

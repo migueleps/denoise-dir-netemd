@@ -1,6 +1,3 @@
-# coding: utf-8
-
-# In[1]:
 import numpy as np
 import sys
 import os
@@ -12,8 +9,7 @@ import time
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
-
-# In[24]:
+import time
 
 indir=sys.argv[1]
 outdir=sys.argv[2]
@@ -48,9 +44,10 @@ def pca_rewrite(queries):
         reconstructed_raw_counts = pd.DataFrame(data = reconstructed_data,columns = list(raw_counts))
         reconstructed_raw_counts.to_csv(f+".countsO",index=False,header=False,sep=" ")
 
-        
-# In[3]:
+
 def KSAQ(indir,outdir,n):
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
     queries=cy.get_queries(indir)
     join_counts(queries)
     start = time.time()
@@ -64,6 +61,7 @@ def KSAQ(indir,outdir,n):
         p.close()
         p.join()
     for i,K in enumerate(c):
+        cy.toM(K,queries,"{}/NetEmd_Orb{}{}_PCA{}EXPVAR".format(outdir,i,indir,int(expvar*100)))
         if i == 0:
             Ms = K
         else:
@@ -74,7 +72,3 @@ def KSAQ(indir,outdir,n):
 
 
 KSAQ(indir,outdir,n)
-
-
-
-

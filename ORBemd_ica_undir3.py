@@ -1,8 +1,4 @@
 
-# coding: utf-8
-
-# In[1]:
-
 import numpy as np
 import sys
 import os
@@ -12,17 +8,13 @@ import cyemdORB_PCA as cy
 from sklearn.decomposition import FastICA
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
-
-
-# In[24]:
+import time
 
 indir=sys.argv[1]
 outdir=sys.argv[2]
 n=int(sys.argv[3])
 ncomps=int(sys.argv[4])
 norbs=4
-
-# In[3]:
 
 def ica_rewrite(queries):
     for f in queries:
@@ -39,9 +31,11 @@ def ica_rewrite(queries):
 
 
 def KSAQ(indir,outdir,n):
-    print(outdir)
+    os.mkdir(outdir)
     queries=cy.get_queries(indir)
+    t = time.time()
     ica_rewrite(queries)
+    print("Type to compute ICA rewrite: {}".format(time.time()-t))
     orbs=range(norbs)
     V=[[queries,orb] for orb in orbs]
     if __name__ == '__main__':
@@ -50,19 +44,19 @@ def KSAQ(indir,outdir,n):
         p.close()
         p.join()
     for i,K in enumerate(c):
-#        cy.toM(K,queries,outdir+'/NetEmd_Orb'+str(i)+indir)
+        cy.toM(K,queries,outdir+'/NetEmd_Orb'+str(i)+indir)
         if i==0:
             Ms=K
-        elif i==3:
+        else:
             Ms=Ms+K
+        if i==3:
             cy.toM(Ms/(i+1),queries,'NetEmd_G3_{}_ICA{}comps'.format(indir,ncomps))
-        elif True:
-            Ms=Ms+K
+
     return 1
-        
-        
-    
-    
+
+
+
+
 
 
 # In[ ]:
@@ -71,6 +65,3 @@ KSAQ(indir,outdir,n)
 
 
 # In[ ]:
-
-
-
