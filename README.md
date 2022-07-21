@@ -1,6 +1,6 @@
 # Comparing directed networks via denoising graphlet distributions
 
-This repository contains the code that implements the methods described in the arXiv preprint: https://arxiv.org/abs/2207.09827
+This repository contains code to perform network comparison based on graphlet distributions. This code implements the methods described in the arXiv preprint: https://arxiv.org/abs/2207.09827
 
 It provides a python implementation of the Earth Mover's Distance (EMD), coded by the authors of [Identifying networks with common organizational principles](https://doi.org/10.1093/comnet/cny003). This repository further extends the original code by adapting it to support directed networks and introduces a denoising mechanism using linear projections, aimed at creating reducing noise in graphlet frequencies prior to the comparing their distributions using EMD.
 
