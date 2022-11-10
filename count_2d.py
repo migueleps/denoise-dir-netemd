@@ -9,6 +9,4 @@ for n in g.nodes():
     pred = set(g.predecessors(n))
     succ = set(g.successors(n))
     recip = pred & succ
-    outf.write("%d %d %d \n" % (len(succ) - len(recip), len(pred) - len(recip), len(recip)))
-
-    
+    outf.write("{} {} {} \n".format(len(succ) - len(recip), len(pred) - len(recip), len(recip)))

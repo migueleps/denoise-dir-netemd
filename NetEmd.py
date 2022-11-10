@@ -1,5 +1,7 @@
 import os
 import sys
+from Orbcnt import count_directed, count_undirected
+from ORBemd import compute_dist
 
 def sanitize(user_input, allowed_inputs, index):
     if user_input not in allowed_inputs:
@@ -18,14 +20,14 @@ if input_size == "2" and input_direction == "undir":
     raise ValueError("NetEmd not implemented for size 2 undirected. Please consult the README in https://github.com/migueleps/denoise-dir-netemd")
 input_type = sys.argv[4]
 sanitize(input_type,types,4)
-n_threads = sys.argv[5]
+n_threads = int(sys.argv[5])
 if len(sys.argv) > 6:
     opt_arg = sys.argv[6]
 else:
     opt_arg = ""
 
-count_file = "Orbcnt5.py" if input_direction == "undir" else "Orbcnt{}D.py".format(input_size)
-emd_file = "ORBemd_{}_{}{}.py".format(input_type,input_direction,input_size)
+counting_func = {"dir": count_directed, "undir":count_undirected}
 
-os.system("python {} {} {}".format(count_file,indir,n_threads))
-os.system("python {} {} {} {} {}".format(emd_file, indir, "{}_by_orbit".format(indir),n_threads,opt_arg))
+if __name__ == "__main__":
+    counting_func[input_direction](indir,n_threads,int(input_size))
+    compute_dist(indir,"",n_threads,input_direction == "dir",int(input_size),input_type,opt_arg)
