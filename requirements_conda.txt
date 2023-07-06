@@ -7,7 +7,7 @@ ca-certificates=2022.4.26=hecd8cb5_0
 certifi=2022.6.15=py38hecd8cb5_0
 cython=0.29.30=py38he9d5cce_0
 intel-openmp=2021.4.0=hecd8cb5_3538
-joblib=1.1.0=pyhd3eb1b0_0
+joblib>=1.2.0
 libcxx=12.0.0=h2f01273_0
 libffi=3.3=hb1e8313_2
 libgfortran=3.0.1=h93005f0_2
